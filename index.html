@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bubble Pop Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background-color: black;
+            color: white;
+        }
+
+        #game {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .bubble {
+            position: absolute;
+            background-color: lightgreen;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+        }
+
+        #score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 20px;
+            z-index: 10;
+        }
+
+        #timer {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            z-index: 10;
+        }
+
+        #game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 30px;
+            display: none;
+        }
+
+        /* Loading transition */
+        #loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            color: lightgreen;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            letter-spacing: 15px;
+            animation: fadeInOut 2s ease-out;
+            z-index: 100;
+            font-family:courier;
+            font-weight:bold;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+ 
+    <!-- Loading transition -->
+    
+    <div id="loading">L.E.V.I</div>
+
+    <div id="game">
+        <div id="score">Score: 0</div>
+        <div id="timer">Time: 30</div>
+        <div id="game-over">Game Over! Final Score: <span id="final-score"></span></div>
+    </div>
+
+    <script>
+        let score = 0;
+        let timeLeft = 30;
+        let gameInterval;
+        let bubbleInterval;
+
+        // Game Initialization
+        window.onload = function () {
+            const loading = document.getElementById("loading");
+            setTimeout(() => {
+                // Remove loading screen after 2 seconds
+                loading.style.display = "none";
+                startGame(); // Start the game
+            }, 2000); // Duration for the transition animation
+        }
+
+        function startGame() {
+            // Start the game
+            gameInterval = setInterval(updateTimer, 1000);
+            bubbleInterval = setInterval(createBubble, 1000);
+
+            document.getElementById("score").textContent = `Score: ${score}`;
+        }
+
+        // Function to create a bubble
+        function createBubble() {
+            const bubble = document.createElement("div");
+            bubble.classList.add("bubble");
+
+            const size = Math.random() * 40 + 20; // Random size
+            bubble.style.width = `${size}px`;
+            bubble.style.height = `${size}px`;
+
+            // Random position
+            const xPos = Math.random() * window.innerWidth - size;
+            bubble.style.left = `${Math.max(0, xPos)}px`;
+            bubble.style.top = `-50px`; // Start above the screen
+
+            // Add bubble to game
+            document.getElementById("game").appendChild(bubble);
+
+            // Bubble falling
+            const fallSpeed = Math.random() * 2 + 1; // Random speed
+            const fallInterval = setInterval(() => {
+                let topPos = parseFloat(bubble.style.top);
+                if (topPos > window.innerHeight) {
+                    clearInterval(fallInterval);
+                    bubble.remove();
+                } else {
+                    bubble.style.top = `${topPos + fallSpeed}px`;
+                }
+            }, 10);
+
+            // Bubble popping on click
+            bubble.onclick = function () {
+                clearInterval(fallInterval);
+                score++;
+                document.getElementById("score").textContent = `Score: ${score}`;
+                bubble.remove(); // Instantly remove the bubble when clicked
+            };
+        }
+ 
+        // Timer Update
+        function updateTimer() {
+            timeLeft--;
+            document.getElementById("timer").textContent = `Time: ${timeLeft}`;
+
+            if (timeLeft <= 0) {
+                 endGame(); 
+            }
+        }
+
+        // End Game
+        function endGame() {
+            clearInterval(gameInterval);
+            clearInterval(bubbleInterval);
+            document.querySelectorAll(".bubble").forEach(bubble => bubble.remove());
+            document.getElementById("game-over").style.display = "block";
+            document.getElementById("final-score").textContent = score;
+        }
+    </script>
+
+</body>
+</html>
