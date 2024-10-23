@@ -53,6 +53,25 @@
             display: none;
         }
 
+        .dollar-sign {
+            position: absolute;
+            font-size: 20px;
+            color: yellow;
+            opacity: 1;
+            animation: fadeOut 1s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+        }
+
         /* Loading transition */
         #loading {
             position: absolute;
@@ -65,12 +84,10 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 40px;
+            font-size: 50px;
             letter-spacing: 15px;
             animation: fadeInOut 2s ease-out;
             z-index: 100;
-            font-family:courier;
-            font-weight:bold;
         }
 
         @keyframes fadeInOut {
@@ -81,9 +98,8 @@
     </style>
 </head>
 <body>
- 
+
     <!-- Loading transition -->
-    
     <div id="loading">L.E.V.I</div>
 
     <div id="game">
@@ -151,16 +167,29 @@
                 score++;
                 document.getElementById("score").textContent = `Score: ${score}`;
                 bubble.remove(); // Instantly remove the bubble when clicked
+
+                // Create and animate the dollar sign
+                const dollarSign = document.createElement("div");
+                dollarSign.classList.add("dollar-sign");
+                dollarSign.textContent = "$";
+                dollarSign.style.left = bubble.style.left;
+                dollarSign.style.top = bubble.style.top;
+                document.getElementById("game").appendChild(dollarSign);
+
+                // Remove dollar sign after animation
+                setTimeout(() => {
+                    dollarSign.remove();
+                }, 1000);
             };
         }
- 
+
         // Timer Update
         function updateTimer() {
             timeLeft--;
             document.getElementById("timer").textContent = `Time: ${timeLeft}`;
 
             if (timeLeft <= 0) {
-                 endGame(); 
+                endGame();
             }
         }
 
